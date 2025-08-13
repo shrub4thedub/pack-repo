@@ -1,0 +1,93 @@
+[data -c pkg]
+  name shrub9
+  desc "9wm window manager fork with virtual workspaces"
+  author "shrub industries"
+  os linux 
+  ver latest
+  license mit
+  url "https://github.com/shrub4thedub/shrub9"
+end
+
+[fn fetch]
+  set repo "github.com/shrub4thedub/shrub9"
+  set url "https://${repo}.git"
+  
+  mktemp
+  set tmpdir ${_mktemp_result}
+  set srcdir "${tmpdir}/shrub9"
+  
+  echo "fetching ${repo}..."
+  run git clone ${url} ${srcdir}
+  
+  cd ${srcdir}
+end
+
+[fn build]
+  echo "building shrub9..."
+  run gcc -o shrub9 9wm.c client.c cursor.c error.c event.c grab.c main.c manage.c menu.c -lX11
+end
+
+[fn install]
+  echo "installing shrub9..."
+  env HOME
+  set home ${_env_result}
+  set bindir "${home}/.local/bin"
+  set configdir "${home}/.config/shrub9"
+  mkdir ${bindir}
+  mkdir ${configdir}
+  
+  if exists shrub9
+    run cp ./shrub9 ${bindir}/shrub9
+    run chmod +x "${bindir}/shrub9"
+    echo "installed shrub9 to ${bindir}/shrub9"
+    
+    if exists sample_config
+      run cp ./sample_config "${configdir}/config"
+      echo "installed sample config to ${configdir}/config"
+    end
+    
+    echo "to use shrub9 as window manager:"
+    echo "add 'exec ${bindir}/shrub9' to your .xinitrc"
+  else
+    echo "shrub9 binary not found after build"
+    exit 1
+  end
+end
+
+[fn -i uninstall]
+  echo "uninstalling shrub9..."
+  env HOME
+  set home ${_env_result}
+  set bindir "${home}/.local/bin"
+  set configdir "${home}/.config/shrub9"
+  set shrub9_path "${bindir}/shrub9"
+  
+  if exists ${shrub9_path}
+    delete ${shrub9_path}
+    echo "removed shrub9 from ${bindir}"
+    
+    if exists ${configdir}
+      echo "config directory remains at ${configdir}"
+      echo "remove manually if desired"
+    end
+    
+    echo "shrub9 uninstallation complete!"
+  else
+    echo "shrub9 not found at ${shrub9_path}"
+    echo "nothing to uninstall"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  cd /
+  delete ${tmpdir}
+  echo "shrub9 installation complete!"
+end
+
+[main]
+  fetch
+  build
+  install
+  cleanup
+end
