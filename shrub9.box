@@ -19,9 +19,7 @@ end
   mkdir ${pack_tmp}
   
   # Create unique subdirectory
-  run date +%s
-  set timestamp ${_run_result}
-  set unique_dir "${pack_tmp}/shrub9_${timestamp}_$$"
+  set unique_dir "${pack_tmp}/shrub9_$$"
   mkdir ${unique_dir}
   set tmpdir ${unique_dir}
   set srcdir "${tmpdir}/shrub9"
