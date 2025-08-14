@@ -8,8 +8,18 @@
   set repo "github.com/shrub4thedub/edith"
   set url "https://${repo}.git"
   
-  mktemp
-  set tmpdir ${_mktemp_result}
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  run date +%s
+  set timestamp ${_run_result}
+  set unique_dir "${pack_tmp}/edith_${timestamp}_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
   set srcdir ${tmpdir}/edith
   
   echo "Fetching ${repo}..."
@@ -42,8 +52,10 @@ end
 end
 
 [fn cleanup]
-  cd /
-  delete ${tmpdir}
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
   echo "edith installation complete!"
 end
 
