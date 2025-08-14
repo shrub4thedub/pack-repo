@@ -3,7 +3,7 @@
   desc "a text editing interface"
   os linux freebsd
   ver 0.1
-  sha256 69a4b723da8e640964604488b25bdacc0c8ecad65479b8f78c1a26e1e5e03d40
+  sha256 3436cfb9f314491e463ed4d3241e706f390e19a12d7e696cb6fb1cb24ab447d5
 
 [fn fetch]
   set repo "github.com/shrub4thedub/edith"
