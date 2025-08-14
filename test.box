@@ -1,0 +1,102 @@
+[data -c pkg]
+  name 9dir
+  desc "minimal file browser inspired by plan 9 vdir"
+  author "shrub industries"
+  os linux 
+  ver 0.1 
+  license "gpl v3"
+  url "https://github.com/shrub4thedub/9dir"
+  sha256 4e49cfce800464c762ff15a7ad27680d27f2b0bf422c409cc8d337123aefdbaa
+end
+
+[fn fetch]
+  set repo "github.com/shrub4thedub/9dir"
+  set url "https://${repo}.git"
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/9dir_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir "${tmpdir}/9dir"
+  
+  echo "fetching ${repo}..."
+  run git clone ${url} ${srcdir}
+  
+  cd ${srcdir}
+end
+
+[fn build]
+  echo "building 9dir..."
+  run gcc -Wall -Wextra -std=c99 -g -c 9dir.c -o 9dir.o
+  run gcc -Wall -Wextra -std=c99 -g -c theme.c -o theme.o
+  run gcc -Wall -Wextra -std=c99 -g -c icons.c -o icons.o
+  run gcc -Wall -Wextra -std=c99 -g -c dialogs.c -o dialogs.o
+  run gcc -Wall -Wextra -std=c99 -g -c config.c -o config.o
+  run gcc 9dir.o theme.o icons.o dialogs.o config.o -o 9dir -lX11 -lm
+end
+
+[fn install]
+  echo "installing 9dir..."
+  env HOME
+  set home ${_env_result}
+  set bindir "${home}/.local/bin"
+  set configdir "${home}/.config/9dir"
+  mkdir ${bindir}
+  mkdir ${configdir}
+  
+  if exists 9dir
+    run cp ./9dir ${bindir}/9dir
+    run chmod +x "${bindir}/9dir"
+    echo "installed 9dir to ${bindir}/9dir"
+    echo "config will be created at ${configdir}/config on first run"
+  else
+    echo "9dir binary not found after build"
+    exit 1
+  end
+end
+
+[fn -i uninstall]
+  echo "uninstalling 9dir..."
+  env HOME
+  set home ${_env_result}
+  set bindir "${home}/.local/bin"
+  set configdir "${home}/.config/9dir"
+  set ninedir_path "${bindir}/9dir"
+  
+  if exists ${ninedir_path}
+    delete ${ninedir_path}
+    echo "removed 9dir from ${bindir}"
+    
+    if exists ${configdir}
+      echo "config directory remains at ${configdir}"
+      echo "remove manually if desired"
+    end
+    
+    echo "9dir uninstallation complete!"
+  else
+    echo "9dir not found at ${ninedir_path}"
+    echo "nothing to uninstall"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "9dir installation complete!"
+end
+
+[main]
+  fetch
+  build
+  install
+  cleanup
+end
