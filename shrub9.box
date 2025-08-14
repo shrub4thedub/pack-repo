@@ -6,7 +6,7 @@
   ver latest
   license mit
   url "https://github.com/shrub4thedub/shrub9"
-  sha256 7ff6cb156c237b34f7c682a6826ad5979fcfe5914ade53b9085209440253aa73
+  sha256 f8ca6a192aba37f7d00b5f845f82dfb65010bcec24daa59e03df89bba06b7457
 end
 
 [fn fetch]
