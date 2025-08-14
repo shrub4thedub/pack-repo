@@ -12,8 +12,18 @@ end
   set repo "github.com/shrub4thedub/9dir"
   set url "https://${repo}.git"
   
-  mktemp
-  set tmpdir ${_mktemp_result}
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  run date +%s
+  set timestamp ${_run_result}
+  set unique_dir "${pack_tmp}/9dir_${timestamp}_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
   set srcdir "${tmpdir}/9dir"
   
   echo "fetching ${repo}..."
@@ -78,8 +88,10 @@ end
 end
 
 [fn cleanup]
-  cd /
-  delete ${tmpdir}
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
   echo "9dir installation complete!"
 end
 
