@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/dylanaraps/pfetch
-  sha256 4020f098ef75bc01c2b64e9664ab962854dea9372e08c385963edeba8b8e03da
+  sha256 a12a27dd091c00bc9475e2e51603b2edbe63e7835efa3873fecae0bc5143ed95
 end
 
 [fn fetch]
@@ -36,11 +36,6 @@ end
 end
 
 [fn cleanup]
-  # Clean up temporary files
-  if exists ${tmpdir}
-    cd /
-    delete ${tmpdir}
-  end
   echo "pfetch installation complete!"
 end
 
