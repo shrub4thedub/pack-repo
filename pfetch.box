@@ -1,0 +1,55 @@
+[data -c pkg]
+  name pfetch
+  desc "A pretty system information tool written in POSIX sh"
+  version latest
+  os linux freebsd
+  url https://github.com/dylanaraps/pfetch
+  sha256 083f362ec91178d20a846ad6705c8f48d6fd7ae13295d4c31b537bc8a60619d3
+end
+
+[fn fetch]
+  echo "Downloading pfetch script..."
+  set script_url "https://raw.githubusercontent.com/dylanaraps/pfetch/master/pfetch"
+  
+  # Download the script
+  run curl -L ${script_url} -o pfetch
+  if test $? -ne 0
+    echo "Failed to download pfetch script"
+    exit 1
+  end
+  
+  # Make it executable
+  run chmod +x pfetch
+  echo "Downloaded pfetch script successfully"
+end
+
+[fn install]
+  echo "Installing pfetch..."
+  env HOME
+  set home ${_env_result}
+  set bin_dir "${home}/.local/bin"
+  
+  # Create bin directory if it doesn't exist
+  mkdir ${bin_dir}
+  
+  # Copy pfetch to user's bin directory
+  run cp pfetch ${bin_dir}/pfetch
+  
+  echo "Installed pfetch to ${bin_dir}/pfetch"
+  echo "Run 'pfetch' to display system information"
+end
+
+[fn cleanup]
+  # Clean up temporary files
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "pfetch installation complete!"
+end
+
+[main]
+  fetch
+  install
+  cleanup
+end
