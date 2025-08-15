@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/dylanaraps/pfetch
-  sha256 083f362ec91178d20a846ad6705c8f48d6fd7ae13295d4c31b537bc8a60619d3
+  sha256 4020f098ef75bc01c2b64e9664ab962854dea9372e08c385963edeba8b8e03da
 end
 
 [fn fetch]
@@ -13,10 +13,6 @@ end
   
   # Download the script
   run curl -L ${script_url} -o pfetch
-  if test $? -ne 0
-    echo "Failed to download pfetch script"
-    exit 1
-  end
   
   # Make it executable
   run chmod +x pfetch
