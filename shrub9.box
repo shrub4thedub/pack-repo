@@ -6,7 +6,7 @@
   ver latest
   license mit
   url "https://github.com/shrub4thedub/shrub9"
-  sha256 f8ca6a192aba37f7d00b5f845f82dfb65010bcec24daa59e03df89bba06b7457
+  sha256 fbc4e437ca9de89c473d6a830a95e9c3b770356b0dc97749254d26616d499123
 end
 
 [fn fetch]
@@ -63,30 +63,6 @@ end
   end
 end
 
-[fn -i uninstall]
-  echo "uninstalling shrub9..."
-  env HOME
-  set home ${_env_result}
-  set bindir "${home}/.local/bin"
-  set configdir "${home}/.config/shrub9"
-  set shrub9_path "${bindir}/shrub9"
-  
-  if exists ${shrub9_path}
-    delete ${shrub9_path}
-    echo "removed shrub9 from ${bindir}"
-    
-    if exists ${configdir}
-      echo "config directory remains at ${configdir}"
-      echo "remove manually if desired"
-    end
-    
-    echo "shrub9 uninstallation complete!"
-  else
-    echo "shrub9 not found at ${shrub9_path}"
-    echo "nothing to uninstall"
-    exit 1
-  end
-end
 
 [fn cleanup]
   if exists ${tmpdir}

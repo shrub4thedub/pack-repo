@@ -3,7 +3,7 @@
   desc "a text editing interface"
   os linux freebsd
   ver 0.1
-  sha256 2ee8c194d677f85025ee7f87ad6fd9dff198fcd8064334f29725a7abfb3e4eab
+  sha256 edcb155e92e4d3d201d08eebe52fa0c75373e7ae8558221b9fa015d20ee14b67
 end
 
 [fn fetch]
@@ -59,22 +59,6 @@ end
   echo "edith installation complete!"
 end
 
-[fn -i uninstall]
-  echo "Uninstalling edith..."
-  env HOME
-  set home ${_env_result}
-  set edith_path "${home}/.local/bin/edith"
-  
-  if exists ${edith_path}
-    delete ${edith_path}
-    echo "Removed edith from ${edith_path}"
-    echo "edith uninstallation complete!"
-  else
-    echo "edith not found at ${edith_path}"
-    echo "Nothing to uninstall."
-    exit 1
-  end
-end
 
 [main]
   fetch

@@ -6,7 +6,7 @@
   ver 0.1 
   license "gpl v3"
   url "https://github.com/shrub4thedub/9dir"
-  sha256 4e49cfce800464c762ff15a7ad27680d27f2b0bf422c409cc8d337123aefdbaa
+  sha256 5976c53be393dcb35a8efebe950f8a917e9f23631747e4dcc2e217f19d13cafe
 end
 
 [fn fetch]
@@ -61,30 +61,6 @@ end
   end
 end
 
-[fn -i uninstall]
-  echo "uninstalling 9dir..."
-  env HOME
-  set home ${_env_result}
-  set bindir "${home}/.local/bin"
-  set configdir "${home}/.config/9dir"
-  set ninedir_path "${bindir}/9dir"
-  
-  if exists ${ninedir_path}
-    delete ${ninedir_path}
-    echo "removed 9dir from ${bindir}"
-    
-    if exists ${configdir}
-      echo "config directory remains at ${configdir}"
-      echo "remove manually if desired"
-    end
-    
-    echo "9dir uninstallation complete!"
-  else
-    echo "9dir not found at ${ninedir_path}"
-    echo "nothing to uninstall"
-    exit 1
-  end
-end
 
 [fn cleanup]
   if exists ${tmpdir}
