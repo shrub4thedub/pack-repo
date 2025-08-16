@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/shrub4thedub/pack
-  sha256 ef0419bdea5240313690c008369fbe1bd1f2b83e928d5962b305be65ef7118db
+  sha256 c7fba0eb016afb3d4aaf983383b27c6442adf639976f291c1ff7c812934ee6c5
 end
 
 [fn check_deps]
