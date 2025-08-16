@@ -1,0 +1,195 @@
+[data -c pkg]
+  name     crystal-orb
+  desc     Discord bot for RSS news feeds from Linux/tech sources
+  ver      latest
+  src-type git
+  src-url  https://github.com/cr33dev/news-feed-discord-bot-for-linux.git
+  src-ref  HEAD
+  bin      crystal-orb
+  license  unknown
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for Python 3
+  run which python3
+  echo "✓ Python 3 found"
+  
+  # Check for pip
+  run which pip3
+  echo "✓ pip3 found"
+end
+
+[fn fetch]
+  echo "Cloning crystal-orb repository..."
+  run git clone --depth=1 https://github.com/cr33dev/news-feed-discord-bot-for-linux.git bot-source
+  cd bot-source
+end
+
+[fn install_deps]
+  echo "Installing Python dependencies..."
+  # Install required packages for the bot
+  run pip3 install --user discord.py feedparser requests
+  echo "✓ Python dependencies installed"
+end
+
+[fn install]
+  echo "Installing crystal-orb..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/crystal-orb"
+  set bin_dir "${home}/.local/bin"
+  set config_dir "${home}/.config/crystal-orb"
+  
+  # Create directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  mkdir ${config_dir}
+  
+  # Install the bot files
+  run cp main.py ${store_dir}/main.py
+  if exists Documentation.pdf
+    run cp Documentation.pdf ${store_dir}/
+  end
+  if exists README.md
+    run cp README.md ${store_dir}/
+  end
+  
+  # Create wrapper script that sets up environment
+  set wrapper "${store_dir}/crystal-orb"
+  echo "#!/bin/bash" > ${wrapper}
+  echo "# Crystal Orb Discord Bot Launcher" >> ${wrapper}
+  echo "" >> ${wrapper}
+  echo "# Check for config" >> ${wrapper}
+  echo "CONFIG_FILE=\"${config_dir}/config.env\"" >> ${wrapper}
+  echo "if [ ! -f \"\$CONFIG_FILE\" ]; then" >> ${wrapper}
+  echo "  echo \"Error: Configuration file not found at \$CONFIG_FILE\"" >> ${wrapper}
+  echo "  echo \"Please create it with your Discord bot settings.\"" >> ${wrapper}
+  echo "  echo \"See ${config_dir}/config.example for template\"" >> ${wrapper}
+  echo "  exit 1" >> ${wrapper}
+  echo "fi" >> ${wrapper}
+  echo "" >> ${wrapper}
+  echo "# Load environment variables" >> ${wrapper}
+  echo "set -a" >> ${wrapper}
+  echo "source \"\$CONFIG_FILE\"" >> ${wrapper}
+  echo "set +a" >> ${wrapper}
+  echo "" >> ${wrapper}
+  echo "# Run the bot" >> ${wrapper}
+  echo "cd ${store_dir}" >> ${wrapper}
+  echo "exec python3 main.py" >> ${wrapper}
+  
+  run chmod +x ${wrapper}
+  
+  # Create symlink in bin directory
+  run ln -sf ${wrapper} ${bin_dir}/crystal-orb
+  
+  # Create configuration template
+  set config_example "${config_dir}/config.example"
+  echo "# Discord Bot Configuration" > ${config_example}
+  echo "# Copy this to config.env and edit with your actual values" >> ${config_example}
+  echo "" >> ${config_example}
+  echo "# Your Discord bot token (required)" >> ${config_example}
+  echo "TOKEN=your_discord_bot_token_here" >> ${config_example}
+  echo "" >> ${config_example}
+  echo "# Discord server (guild) ID where the bot will operate" >> ${config_example}
+  echo "GUILD=your_server_id_here" >> ${config_example}
+  echo "" >> ${config_example}
+  echo "# Channel ID where news will be posted" >> ${config_example}
+  echo "CHANNEL_ID=your_channel_id_here" >> ${config_example}
+  echo "" >> ${config_example}
+  echo "# Optional: Refresh rate in minutes (default: 30)" >> ${config_example}
+  echo "# REFRESH_RATE=30" >> ${config_example}
+  echo "" >> ${config_example}
+  echo "# Optional: Show only titles (true/false)" >> ${config_example}
+  echo "# TITLE_ONLY=false" >> ${config_example}
+  
+  # Create setup instructions
+  set setup_file "${config_dir}/SETUP.txt"
+  echo "Crystal Orb Discord Bot Setup Instructions" > ${setup_file}
+  echo "=======================================" >> ${setup_file}
+  echo "" >> ${setup_file}
+  echo "1. Create a Discord application and bot:" >> ${setup_file}
+  echo "   - Go to https://discord.com/developers/applications" >> ${setup_file}
+  echo "   - Create a new application" >> ${setup_file}
+  echo "   - Go to the Bot section and create a bot" >> ${setup_file}
+  echo "   - Copy the bot token" >> ${setup_file}
+  echo "" >> ${setup_file}
+  echo "2. Add the bot to your server:" >> ${setup_file}
+  echo "   - In the OAuth2 > URL Generator section" >> ${setup_file}
+  echo "   - Select 'bot' scope and necessary permissions" >> ${setup_file}
+  echo "   - Use the generated URL to invite the bot" >> ${setup_file}
+  echo "" >> ${setup_file}
+  echo "3. Configure the bot:" >> ${setup_file}
+  echo "   - Copy ${config_dir}/config.example to ${config_dir}/config.env" >> ${setup_file}
+  echo "   - Edit config.env with your bot token, server ID, and channel ID" >> ${setup_file}
+  echo "" >> ${setup_file}
+  echo "4. Run the bot:" >> ${setup_file}
+  echo "   - crystal-orb" >> ${setup_file}
+  echo "" >> ${setup_file}
+  echo "The bot will check RSS feeds every 30 minutes and post updates to your Discord channel." >> ${setup_file}
+  
+  echo "Installed crystal-orb to ${store_dir}"
+  echo "Created symlink at ${bin_dir}/crystal-orb"
+  echo ""
+  echo "Setup required! Please read:"
+  echo "  ${config_dir}/SETUP.txt"
+  echo ""
+  echo "Then configure your bot by copying:"
+  echo "  ${config_dir}/config.example → ${config_dir}/config.env"
+end
+
+[fn cleanup]
+  # Clean up source directory
+  cd ..
+  if exists bot-source
+    delete bot-source
+  end
+  echo "crystal-orb installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling crystal-orb..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/crystal-orb"
+  set bin_dir "${home}/.local/bin"
+  set config_dir "${home}/.config/crystal-orb"
+  set symlink_target "${bin_dir}/crystal-orb"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  # Ask about config directory
+  echo "Configuration directory ${config_dir} contains your bot settings."
+  echo "Remove it? [y/N]:"
+  read remove_config
+  if test "${remove_config}" = "y"
+    if exists ${config_dir}
+      delete ${config_dir}
+      echo "removed config directory ${config_dir}"
+    end
+  else
+    echo "kept config directory ${config_dir}"
+  end
+  
+  echo "crystal-orb uninstalled successfully"
+  echo "Note: Python dependencies (discord.py, feedparser, requests) were not removed"
+end
+
+[main]
+  check_deps
+  fetch
+  install_deps
+  install
+  cleanup
+end
