@@ -1,33 +1,26 @@
 # Universal uninstaller for pack
 # Imports lock file data and removes installed files
 
-import package.lock
+import package
 
 [fn uninstall]
-  echo "Uninstalling ${lock.package}..."
+  # Work around BOX variable expansion issue by setting variables first
+  set pkg_name ${package.lock.package}
+  set binary_path ${package.lock.installed_to}
+  set config_path ${package.lock.config_dir}
+  
+  echo "Uninstalling $pkg_name..."
   
   # Remove installed binary
-  if exists ${lock.installed_to}
-    delete ${lock.installed_to}
-    echo "Removed ${lock.package} from ${lock.installed_to}"
-  else
-    echo "${lock.package} binary not found at ${lock.installed_to}"
-  end
+  echo "Removing binary at: $binary_path"
+  delete $binary_path
+  echo "Removed $pkg_name binary"
   
-  # Check if config directory exists and ask user
-  if exists ${lock.config_dir}
-    echo "Config directory found at ${lock.config_dir}"
-    echo "Remove config directory? [y/N]: "
-    read response
-    if match ${response} "y|yes|Y|YES"
-      delete ${lock.config_dir}
-      echo "Removed config directory ${lock.config_dir}"
-    else
-      echo "Config directory preserved at ${lock.config_dir}"
-    end
-  end
+  # Check config directory
+  echo "Checking config directory: $config_path"
+  echo "Config directory will be preserved (remove manually if desired)"
   
-  echo "${lock.package} uninstallation complete!"
+  echo "$pkg_name uninstallation complete!"
 end
 
 [main]

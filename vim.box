@@ -1,0 +1,85 @@
+[data -c pkg]
+  name vim
+  desc "Vi IMproved - advanced text editor"
+  version latest
+  os linux freebsd
+  url https://github.com/vim/vim
+  sha256 9281f58d3ac79e2d6ad02e1351c413a2c49674c687f6cad878e711b4fc0b0013
+end
+
+[fn check_deps]
+  echo "Checking build dependencies..."
+  
+  # Check for essential build tools
+  run which gcc
+  run which make
+  run which git
+  
+  # Check for ncurses development libraries
+  if exists /usr/include/ncurses.h
+    echo "✓ ncurses development headers found"
+  else
+    if exists /usr/include/ncurses/ncurses.h
+      echo "✓ ncurses development headers found"
+    else
+      echo "✗ ncurses development libraries not found"
+      echo ""
+      echo "Please install ncurses development packages:"
+      echo "  Debian/Ubuntu: sudo apt install libncurses-dev"
+      echo "  RHEL/CentOS:   sudo yum install ncurses-devel"
+      echo "  Arch Linux:    sudo pacman -S ncurses"
+      echo "  Alpine Linux:  sudo apk add ncurses-dev"
+      echo "  FreeBSD:       sudo pkg install ncurses"
+      echo "  Void Linux:    sudo xbps-install -S ncurses-devel"
+      exit 1
+    end
+  end
+end
+
+[fn fetch]
+  echo "Cloning Vim repository..."
+  run git clone --depth=1 https://github.com/vim/vim.git vim-source
+  cd vim-source/src
+end
+
+[fn configure]
+  echo "Configuring Vim build..."
+  env HOME
+  set home ${_env_result}
+  set prefix "${home}/.local"
+  
+  run ./configure --prefix=${prefix} --with-features=normal --enable-multibyte --disable-gui --without-x
+end
+
+[fn build]
+  echo "Compiling Vim..."
+  run make
+end
+
+
+[fn install]
+  echo "Installing Vim..."
+  run make install
+  
+  env HOME
+  set home ${_env_result}
+  echo "Vim installed to ${home}/.local/bin/vim"
+  echo "Run 'vim' to start the editor"
+end
+
+[fn cleanup]
+  if exists vim-source
+    cd /
+    delete vim-source
+  end
+  echo "Vim installation complete!"
+end
+
+[main]
+  check_deps
+  fetch
+  configure
+  build
+  install
+  cleanup
+end
