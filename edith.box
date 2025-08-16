@@ -1,10 +1,12 @@
 [data -c pkg]
-  name edith
-  desc "a text editing interface"
-  os linux freebsd
-  ver 0.1
-  url https://github.com/shrub4thedub/edith
-  sha256 a288bc629bb160d36c0964f5e752452622d31b4a5eb1f57caca7687ec5c4f45d
+  name     edith
+  desc     a text editing interface
+  ver      0.1
+  src-type git
+  src-url  https://github.com/shrub4thedub/edith.git
+  src-ref  HEAD
+  bin      edith
+  license  MIT
 end
 
 [fn fetch]
@@ -67,6 +69,29 @@ end
   echo "edith installation complete!"
 end
 
+
+[fn -i uninstall]
+  echo "Uninstalling edith..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/edith"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/edith"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "edith uninstalled successfully"
+end
 
 [main]
   fetch

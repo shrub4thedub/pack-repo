@@ -1,10 +1,13 @@
 [data -c pkg]
-  name pfetch
-  desc "A pretty system information tool written in POSIX sh"
-  version latest
-  os linux freebsd
-  url https://github.com/dylanaraps/pfetch
-  sha256 fe76a2c88be7e7a37059de44a92d7d3aae2d8f32ba081ca429134dcc93537106
+  name     pfetch
+  desc     A pretty system information tool written in POSIX sh  
+  ver      latest
+  src-type git
+  src-url  https://github.com/dylanaraps/pfetch.git
+  src-ref  HEAD
+  bin      pfetch
+  license  MIT
+  sha256   9da01b40bfa167a0eb278628fc8b064b31a26b6d02c56ba01a7be8923c95b73c
 end
 
 [fn fetch]
@@ -48,6 +51,29 @@ end
     delete pfetch
   end
   echo "pfetch installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling pfetch..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/pfetch"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/pfetch"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "pfetch uninstalled successfully"
 end
 
 [main]

@@ -1,10 +1,12 @@
 [data -c pkg]
-  name vim
-  desc "Vi IMproved - advanced text editor"
-  version latest
-  os linux freebsd
-  url https://github.com/vim/vim
-  sha256 9e6bb91acfa27e2f11ad89dff2d55793687a6d5b29a426405ebadedd95334988
+  name     vim
+  desc     Vi IMproved - advanced text editor
+  ver      latest
+  src-type git
+  src-url  https://github.com/vim/vim.git
+  src-ref  HEAD
+  bin      vim
+  license  Vim
 end
 
 [fn check_deps]
@@ -82,6 +84,29 @@ end
     delete vim-source
   end
   echo "Vim installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling vim..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/vim"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/vim"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "vim uninstalled successfully"
 end
 
 [main]

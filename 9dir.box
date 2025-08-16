@@ -1,12 +1,12 @@
 [data -c pkg]
-  name 9dir
-  desc "minimal file browser inspired by plan 9 vdir"
-  author "shrub industries"
-  os linux 
-  ver 0.1 
-  license "gpl v3"
-  url "https://github.com/shrub4thedub/9dir"
-  sha256 a9a31b8468e800b3e6959c855796b3d909b22dc175ea223997f3d8673284871d
+  name     9dir
+  desc     minimal file browser inspired by plan 9 vdir
+  ver      0.1
+  src-type git
+  src-url  https://github.com/shrub4thedub/9dir.git
+  src-ref  HEAD
+  bin      9dir
+  license  GPL-3.0
 end
 
 [fn fetch]
@@ -76,6 +76,29 @@ end
     delete ${tmpdir}
   end
   echo "9dir installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling 9dir..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/9dir"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/9dir"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "9dir uninstalled successfully"
 end
 
 [main]

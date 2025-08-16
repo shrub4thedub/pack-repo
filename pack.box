@@ -1,10 +1,12 @@
 [data -c pkg]
-  name pack
-  desc "A package manager using boxlang"
-  version latest
-  os linux freebsd
-  url https://github.com/shrub4thedub/pack
-  sha256 c7fba0eb016afb3d4aaf983383b27c6442adf639976f291c1ff7c812934ee6c5
+  name     pack
+  desc     A package manager using boxlang
+  ver      latest
+  src-type git
+  src-url  https://github.com/shrub4thedub/pack.git
+  src-ref  HEAD
+  bin      pack
+  license  MIT
 end
 
 [fn check_deps]
@@ -67,6 +69,29 @@ end
     delete pack-source
   end
   echo "pack installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling pack..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/pack"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/pack"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "pack uninstalled successfully"
 end
 
 [main]

@@ -1,10 +1,12 @@
 [data -c pkg]
-  name fml
-  desc "Stupid simple, fast TUI file manager written in BASH"
-  version latest
-  os linux freebsd
-  url https://github.com/wick3dr0se/fml
-  sha256 52a74e2ec3cf11c606ca0b3fd0480df517c35f0a1431131cf0a289409004b6a5
+  name     fml
+  desc     Stupid simple, fast TUI file manager written in BASH
+  ver      latest
+  src-type git
+  src-url  https://github.com/wick3dr0se/fml.git
+  src-ref  HEAD
+  bin      fml
+  license  GPL-3.0
 end
 
 [fn check_deps]
@@ -51,6 +53,29 @@ end
     delete fml-source
   end
   echo "fml installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling fml..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/fml"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/fml"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "fml uninstalled successfully"
 end
 
 [main]

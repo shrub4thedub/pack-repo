@@ -1,10 +1,12 @@
 [data -c pkg]
-  name boxlang
-  desc "a scripting langauge inspired by plan9 rc"
-  version latest
-  os linux freebsd
-  url https://github.com/shrub4thedub/boxlang
-  sha256 3a0e86abbc08121b40df0158ddcde73d4994318bcad676df460eb537b3f7ca5b
+  name     boxlang
+  desc     a scripting language inspired by plan9 rc
+  ver      latest
+  src-type git
+  src-url  https://github.com/shrub4thedub/boxlang.git
+  src-ref  HEAD
+  bin      box
+  license  MIT
 end
 
 [fn check_deps]
@@ -68,6 +70,29 @@ end
     delete boxlang-source
   end
   echo "boxlang installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling boxlang..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/boxlang"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/box"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "boxlang uninstalled successfully"
 end
 
 [main]
