@@ -1,0 +1,70 @@
+[data -c pkg]
+  name pack
+  desc "A package manager using boxlang"
+  version latest
+  os linux freebsd
+  url https://github.com/shrub4thedub/pack
+  sha256 5ba49b42601c12bfe50023f0259e1bfd99ed8319ada5c2394a6a33b0d68e6768
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for Go
+  run which go
+  echo "✓ Go found"
+end
+
+[fn fetch]
+  echo "Cloning pack repository..."
+  run git clone --depth=1 https://github.com/shrub4thedub/pack.git pack-source
+  cd pack-source
+end
+
+[fn build]
+  echo "Building pack..."
+  run go build -o pack main.go
+end
+
+[fn install]
+  echo "Installing pack..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/pack"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/pack"
+  set symlink_target "${bin_dir}/pack"
+  
+  # Create store and bin directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  
+  if exists pack
+    run cp ./pack ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "Installed pack to ${store_target}"
+    echo "Created symlink at ${symlink_target}"
+    echo "Pack package manager is now self-managed!"
+  else
+    echo "pack binary not found after build"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  # Clean up source directory - go back to parent first
+  cd ..
+  if exists pack-source
+    delete pack-source
+  end
+  echo "pack installation complete!"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
