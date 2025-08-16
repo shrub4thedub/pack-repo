@@ -1,0 +1,10 @@
+[data -c keyinfo]
+  version     2
+  issued_at   1755384624
+  expires_at  1818456624
+  algorithm   ed25519
+end
+
+[data -c pubkey]
+  key hP8x1543whJvq5HfIsP+SX8YTEZVI2dzkz4sLvUwyjE=
+end
