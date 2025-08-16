@@ -6,7 +6,7 @@
   ver latest
   license mit
   url "https://github.com/shrub4thedub/shrub9"
-  sha256 fbc4e437ca9de89c473d6a830a95e9c3b770356b0dc97749254d26616d499123
+  sha256 cfa998e64be20613b0ccf795c1f6e22e775846e348c66a4edcbdac337235fc0a
 end
 
 [fn fetch]
@@ -40,15 +40,23 @@ end
   echo "installing shrub9..."
   env HOME
   set home ${_env_result}
-  set bindir "${home}/.local/bin"
+  set store_dir "${home}/.pack/store/shrub9"
+  set bin_dir "${home}/.local/bin"
   set configdir "${home}/.config/shrub9"
-  mkdir ${bindir}
+  set store_target "${store_dir}/shrub9"
+  set symlink_target "${bin_dir}/shrub9"
+  
+  # Create store, bin, and config directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
   mkdir ${configdir}
   
   if exists shrub9
-    run cp ./shrub9 ${bindir}/shrub9
-    run chmod +x "${bindir}/shrub9"
-    echo "installed shrub9 to ${bindir}/shrub9"
+    run cp ./shrub9 ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "installed shrub9 to ${store_target}"
+    echo "created symlink at ${symlink_target}"
     
     if exists sample_config
       run cp ./sample_config "${configdir}/config"
@@ -56,7 +64,7 @@ end
     end
     
     echo "to use shrub9 as window manager:"
-    echo "add 'exec ${bindir}/shrub9' to your .xinitrc"
+    echo "add 'exec ${symlink_target}' to your .xinitrc"
   else
     echo "shrub9 binary not found after build"
     exit 1
