@@ -7,7 +7,6 @@
   src-ref  HEAD
   bin      pfetch
   license  MIT
-  sha256   9da01b40bfa167a0eb278628fc8b064b31a26b6d02c56ba01a7be8923c95b73c
 end
 
 [fn fetch]

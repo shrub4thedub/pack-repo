@@ -6,7 +6,6 @@
   ver 0.1 
   license "gpl v3"
   url "https://github.com/shrub4thedub/9dir"
-  sha256 4e49cfce800464c762ff15a7ad27680d27f2b0bf422c409cc8d337123aefdbaa
 end
 
 [fn fetch]
