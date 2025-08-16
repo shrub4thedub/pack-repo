@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/vim/vim
-  sha256 9281f58d3ac79e2d6ad02e1351c413a2c49674c687f6cad878e711b4fc0b0013
+  sha256 9c1697dd420ea9113ebc05d98232d6f52b3fc1dcc1cabe5b16d9e771b00ba079
 end
 
 [fn check_deps]
@@ -68,8 +68,9 @@ end
 end
 
 [fn cleanup]
+  # Clean up source directory - go back to parent first
+  cd ..
   if exists vim-source
-    cd /
     delete vim-source
   end
   echo "Vim installation complete!"

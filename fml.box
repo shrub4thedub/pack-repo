@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/wick3dr0se/fml
-  sha256 b378a8e863be96b770df3ca602c822316661fabddc0517f6b2cbb9e1b84061d0
+  sha256 982c888fc8988d3351d991b8720b82499437c9ab17385135c06967c2b6cd1fec
 end
 
 [fn check_deps]
@@ -39,8 +39,9 @@ end
 end
 
 [fn cleanup]
+  # Clean up source directory - go back to parent first
+  cd ..
   if exists fml-source
-    cd /
     delete fml-source
   end
   echo "fml installation complete!"
