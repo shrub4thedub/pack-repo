@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/shrub4thedub/pack
-  sha256 5ba49b42601c12bfe50023f0259e1bfd99ed8319ada5c2394a6a33b0d68e6768
+  sha256 ef0419bdea5240313690c008369fbe1bd1f2b83e928d5962b305be65ef7118db
 end
 
 [fn check_deps]
@@ -34,18 +34,27 @@ end
   set bin_dir "${home}/.local/bin"
   set store_target "${store_dir}/pack"
   set symlink_target "${bin_dir}/pack"
+  set temp_target "${store_dir}/pack.new"
   
   # Create store and bin directories
   mkdir ${store_dir}
   mkdir ${bin_dir}
   
   if exists pack
-    run cp ./pack ${store_target}
-    run chmod +x ${store_target}
+    # Copy to temporary file first to avoid "text file busy" error
+    run cp ./pack ${temp_target}
+    run chmod +x ${temp_target}
+    
+    # Move temporary file to final location (atomic operation)
+    run mv ${temp_target} ${store_target}
+    
+    # Update symlink
     run ln -sf ${store_target} ${symlink_target}
+    
     echo "Installed pack to ${store_target}"
     echo "Created symlink at ${symlink_target}"
     echo "Pack package manager is now self-managed!"
+    echo "Note: You may need to restart your shell to use the updated version"
   else
     echo "pack binary not found after build"
     exit 1
