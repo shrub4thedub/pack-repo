@@ -4,7 +4,7 @@
   os linux freebsd
   ver 0.1
   url https://github.com/shrub4thedub/edith
-  sha256 1c7d79fed77e194df04609c942ae348cc739867b610de4a6d7ec2738eb4c8b1e
+  sha256 a288bc629bb160d36c0964f5e752452622d31b4a5eb1f57caca7687ec5c4f45d
 end
 
 [fn fetch]
@@ -38,14 +38,21 @@ end
   echo "Installing edith..."
   env HOME
   set home ${_env_result}
-  set bindir "${home}/.local/bin"
-  set target "${bindir}/edith"
-  mkdir ${bindir}
+  set store_dir "${home}/.pack/store/edith"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/edith"
+  set symlink_target "${bin_dir}/edith"
+  
+  # Create store and bin directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
   
   if exists ./edith
-    run cp ./edith ${target}
-    run chmod +x ${target}
-    echo "Installed edith to ${target}"
+    run cp ./edith ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "Installed edith to ${store_target}"
+    echo "Created symlink at ${symlink_target}"
   else
     echo "edith binary not found after build"
     exit 1

@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/dylanaraps/pfetch
-  sha256 184bf1096855699e5226d610d859fe1c9e89e43e423f3c96f53273c31814a159
+  sha256 fe76a2c88be7e7a37059de44a92d7d3aae2d8f32ba081ca429134dcc93537106
 end
 
 [fn fetch]
@@ -23,15 +23,22 @@ end
   echo "Installing pfetch..."
   env HOME
   set home ${_env_result}
+  set store_dir "${home}/.pack/store/pfetch"
   set bin_dir "${home}/.local/bin"
   
-  # Create bin directory if it doesn't exist
+  # Create store and bin directories
+  mkdir ${store_dir}
   mkdir ${bin_dir}
   
-  # Copy pfetch to user's bin directory
-  run cp pfetch ${bin_dir}/pfetch
+  # Copy pfetch to store directory
+  run cp pfetch ${store_dir}/pfetch
+  run chmod +x ${store_dir}/pfetch
   
-  echo "Installed pfetch to ${bin_dir}/pfetch"
+  # Create symlink in bin directory
+  run ln -sf ${store_dir}/pfetch ${bin_dir}/pfetch
+  
+  echo "Installed pfetch to ${store_dir}/pfetch"
+  echo "Created symlink at ${bin_dir}/pfetch"
   echo "Run 'pfetch' to display system information"
 end
 
