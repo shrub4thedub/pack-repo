@@ -1,0 +1,97 @@
+# packlib.box - Standard installation helpers for pack recipes
+
+[fn -h putbin src name]
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/${name}"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/${name}"
+  set symlink_target "${bin_dir}/${name}"
+  
+  # Create directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  
+  # Copy binary to store
+  run cp ${src} ${store_target}
+  run chmod +x ${store_target}
+  
+  # Create symlink
+  run ln -sf ${store_target} ${symlink_target}
+  
+  echo "installed ${name} to ${store_target}"
+  echo "created symlink at ${symlink_target}"
+end
+
+[fn -h putbin_atomic src name]
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/${name}"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/${name}"
+  set symlink_target "${bin_dir}/${name}"
+  set temp_target "${store_dir}/${name}.new"
+  
+  # Create directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  
+  # Atomic installation to avoid "text file busy" errors
+  run cp ${src} ${temp_target}
+  run chmod +x ${temp_target}
+  run mv ${temp_target} ${store_target}
+  
+  # Create symlink
+  run ln -sf ${store_target} ${symlink_target}
+  
+  echo "installed ${name} to ${store_target}"
+  echo "created symlink at ${symlink_target}"
+end
+
+[fn -h removebin name]
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/${name}"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/${name}"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+end
+
+[fn -h install_dir src dest]
+  env HOME
+  set home ${_env_result}
+  set full_dest "${home}/${dest}"
+  
+  # Create destination directory
+  mkdir ${full_dest}
+  
+  # Copy directory contents
+  run cp -r ${src}/. ${full_dest}/
+  
+  echo "installed directory to ${full_dest}"
+end
+
+[fn -h get_store_path name]
+  env HOME
+  set home ${_env_result}
+  set store_path "${home}/.pack/store/${name}"
+  echo ${store_path}
+end
+
+[fn -h get_config_path name]
+  env HOME
+  set home ${_env_result}
+  set config_path "${home}/.config/${name}"
+  echo ${config_path}
+end

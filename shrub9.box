@@ -1,12 +1,12 @@
 [data -c pkg]
-  name shrub9
-  desc "9wm window manager fork with virtual workspaces"
-  author "shrub industries"
-  os linux 
-  ver latest
-  license mit
-  url "https://github.com/shrub4thedub/shrub9"
-  sha256 cfa998e64be20613b0ccf795c1f6e22e775846e348c66a4edcbdac337235fc0a
+  name     shrub9
+  desc     9wm window manager fork with virtual workspaces
+  ver      latest
+  src-type git
+  src-url  https://github.com/shrub4thedub/shrub9.git
+  src-ref  HEAD
+  bin      shrub9
+  license  MIT
 end
 
 [fn fetch]
@@ -78,6 +78,29 @@ end
     delete ${tmpdir}
   end
   echo "shrub9 installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling shrub9..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/shrub9"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/shrub9"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "shrub9 uninstalled successfully"
 end
 
 [main]
