@@ -6,7 +6,7 @@
   src-url  https://github.com/shrub4thedub/pack.git
   src-ref  HEAD
   bin      pack
-  license  MIT
+  license  GPL-3.0
 end
 
 [fn check_deps]

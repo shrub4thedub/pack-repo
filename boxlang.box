@@ -6,7 +6,7 @@
   src-url  https://github.com/shrub4thedub/boxlang.git
   src-ref  HEAD
   bin      box
-  license  MIT
+  license  GPL-3.0
 end
 
 [fn check_deps]

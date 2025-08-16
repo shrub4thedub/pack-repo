@@ -6,7 +6,7 @@
   src-url  https://github.com/shrub4thedub/edith.git
   src-ref  HEAD
   bin      edith
-  license  MIT
+  license  GPL-3.0
 end
 
 [fn fetch]
