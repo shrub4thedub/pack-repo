@@ -40,8 +40,8 @@ end
   
   # Create wrapper script in store directory
   set wrapper "${store_dir}/crystal-orb"
-  echo "#!/bin/bash" > ${wrapper}
-  echo "cd ${store_dir} && python3 main.py" >> ${wrapper}
+  run echo "#!/bin/bash" > ${wrapper}
+  run echo "cd ${store_dir} && python3 main.py" >> ${wrapper}
   run chmod +x ${wrapper}
   
   # Create symlink in bin directory
