@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/shrub4thedub/boxlang
-  sha256 11900561118695242ab973a21095dec35ffa47e7f328e069a335c5f84bd8f43c
+  sha256 3a0e86abbc08121b40df0158ddcde73d4994318bcad676df460eb537b3f7ca5b
 end
 
 [fn check_deps]
