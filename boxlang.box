@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/shrub4thedub/boxlang
-  sha256 e3551dceba8f3b8c9a724f90e979b015677d441a2e5ab0e0bb8c32437c551c63
+  sha256 11900561118695242ab973a21095dec35ffa47e7f328e069a335c5f84bd8f43c
 end
 
 [fn check_deps]
@@ -34,18 +34,27 @@ end
   set bin_dir "${home}/.local/bin"
   set store_target "${store_dir}/box"
   set symlink_target "${bin_dir}/box"
+  set temp_target "${store_dir}/box.new"
   
   # Create store and bin directories
   mkdir ${store_dir}
   mkdir ${bin_dir}
   
   if exists box
-    run cp ./box ${store_target}
-    run chmod +x ${store_target}
+    # Copy to temporary file first to avoid "text file busy" error
+    run cp ./box ${temp_target}
+    run chmod +x ${temp_target}
+    
+    # Move temporary file to final location (atomic operation)
+    run mv ${temp_target} ${store_target}
+    
+    # Update symlink
     run ln -sf ${store_target} ${symlink_target}
+    
     echo "Installed boxlang to ${store_target}"
     echo "Created symlink at ${symlink_target}"
     echo "BOX language interpreter is now available as 'box'"
+    echo "Note: You may need to restart your shell to use the updated version"
   else
     echo "box binary not found after build"
     exit 1
