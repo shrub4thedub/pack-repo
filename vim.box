@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/vim/vim
-  sha256 9c1697dd420ea9113ebc05d98232d6f52b3fc1dcc1cabe5b16d9e771b00ba079
+  sha256 9e6bb91acfa27e2f11ad89dff2d55793687a6d5b29a426405ebadedd95334988
 end
 
 [fn check_deps]
@@ -46,7 +46,7 @@ end
   echo "Configuring Vim build..."
   env HOME
   set home ${_env_result}
-  set prefix "${home}/.local"
+  set prefix "${home}/.pack/store/vim"
   
   run ./configure --prefix=${prefix} --with-features=normal --enable-multibyte --disable-gui --without-x
 end
@@ -63,7 +63,15 @@ end
   
   env HOME
   set home ${_env_result}
-  echo "Vim installed to ${home}/.local/bin/vim"
+  set store_dir "${home}/.pack/store/vim"
+  set bin_dir "${home}/.local/bin"
+  
+  # Create bin directory and symlink
+  mkdir ${bin_dir}
+  run ln -sf ${store_dir}/bin/vim ${bin_dir}/vim
+  
+  echo "Vim installed to ${store_dir}/bin/vim"
+  echo "Created symlink at ${bin_dir}/vim"
   echo "Run 'vim' to start the editor"
 end
 

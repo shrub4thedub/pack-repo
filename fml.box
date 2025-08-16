@@ -4,7 +4,7 @@
   version latest
   os linux freebsd
   url https://github.com/wick3dr0se/fml
-  sha256 982c888fc8988d3351d991b8720b82499437c9ab17385135c06967c2b6cd1fec
+  sha256 52a74e2ec3cf11c606ca0b3fd0480df517c35f0a1431131cf0a289409004b6a5
 end
 
 [fn check_deps]
@@ -25,16 +25,22 @@ end
   echo "Installing fml..."
   env HOME
   set home ${_env_result}
+  set store_dir "${home}/.pack/store/fml"
   set bin_dir "${home}/.local/bin"
   
-  # Create bin directory if it doesn't exist
+  # Create store and bin directories
+  mkdir ${store_dir}
   mkdir ${bin_dir}
   
-  # Copy fml script to user's bin directory
-  run cp fml ${bin_dir}/fml
-  run chmod +x ${bin_dir}/fml
+  # Copy fml script to store directory
+  run cp fml ${store_dir}/fml
+  run chmod +x ${store_dir}/fml
   
-  echo "Installed fml to ${bin_dir}/fml"
+  # Create symlink in bin directory
+  run ln -sf ${store_dir}/fml ${bin_dir}/fml
+  
+  echo "Installed fml to ${store_dir}/fml"
+  echo "Created symlink at ${bin_dir}/fml"
   echo "Run 'fml' to start the file manager"
 end
 
