@@ -53,7 +53,6 @@ end
     
     echo "Installed pack to ${store_target}"
     echo "Created symlink at ${symlink_target}"
-    echo "Pack package manager is now self-managed!"
     echo "Note: You may need to restart your shell to use the updated version"
   else
     echo "pack binary not found after build"
