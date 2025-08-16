@@ -1,6 +1,6 @@
 [data -c pkg]
   name boxlang
-  desc "A shell interpreter for the BOX language"
+  desc "a scripting langauge inspired by plan9 rc"
   version latest
   os linux freebsd
   url https://github.com/shrub4thedub/boxlang
@@ -53,7 +53,7 @@ end
     
     echo "Installed boxlang to ${store_target}"
     echo "Created symlink at ${symlink_target}"
-    echo "BOX language interpreter is now available as 'box'"
+    echo "boxlang now available as 'box'"
     echo "Note: You may need to restart your shell to use the updated version"
   else
     echo "box binary not found after build"
