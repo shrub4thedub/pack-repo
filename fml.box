@@ -1,0 +1,54 @@
+[data -c pkg]
+  name fml
+  desc "Stupid simple, fast TUI file manager written in BASH"
+  version latest
+  os linux freebsd
+  url https://github.com/wick3dr0se/fml
+  sha256 b378a8e863be96b770df3ca602c822316661fabddc0517f6b2cbb9e1b84061d0
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for bash version 4.2+
+  run bash --version
+  echo "✓ Bash found (requires v4.2+)"
+end
+
+[fn fetch]
+  echo "Cloning fml repository..."
+  run git clone --depth=1 https://github.com/wick3dr0se/fml.git fml-source
+  cd fml-source
+end
+
+[fn install]
+  echo "Installing fml..."
+  env HOME
+  set home ${_env_result}
+  set bin_dir "${home}/.local/bin"
+  
+  # Create bin directory if it doesn't exist
+  mkdir ${bin_dir}
+  
+  # Copy fml script to user's bin directory
+  run cp fml ${bin_dir}/fml
+  run chmod +x ${bin_dir}/fml
+  
+  echo "Installed fml to ${bin_dir}/fml"
+  echo "Run 'fml' to start the file manager"
+end
+
+[fn cleanup]
+  if exists fml-source
+    cd /
+    delete fml-source
+  end
+  echo "fml installation complete!"
+end
+
+[main]
+  check_deps
+  fetch
+  install
+  cleanup
+end
