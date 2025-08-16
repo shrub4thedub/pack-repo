@@ -1,0 +1,70 @@
+[data -c pkg]
+  name boxlang
+  desc "A shell interpreter for the BOX language"
+  version latest
+  os linux freebsd
+  url https://github.com/shrub4thedub/boxlang
+  sha256 e3551dceba8f3b8c9a724f90e979b015677d441a2e5ab0e0bb8c32437c551c63
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for Go
+  run which go
+  echo "✓ Go found"
+end
+
+[fn fetch]
+  echo "Cloning boxlang repository..."
+  run git clone --depth=1 https://github.com/shrub4thedub/boxlang.git boxlang-source
+  cd boxlang-source
+end
+
+[fn build]
+  echo "Building boxlang..."
+  run go build -o box cmd/box/main.go
+end
+
+[fn install]
+  echo "Installing boxlang..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/boxlang"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/box"
+  set symlink_target "${bin_dir}/box"
+  
+  # Create store and bin directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  
+  if exists box
+    run cp ./box ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "Installed boxlang to ${store_target}"
+    echo "Created symlink at ${symlink_target}"
+    echo "BOX language interpreter is now available as 'box'"
+  else
+    echo "box binary not found after build"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  # Clean up source directory - go back to parent first
+  cd ..
+  if exists boxlang-source
+    delete boxlang-source
+  end
+  echo "boxlang installation complete!"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
