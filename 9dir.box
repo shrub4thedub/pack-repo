@@ -6,7 +6,7 @@
   ver 0.1 
   license "gpl v3"
   url "https://github.com/shrub4thedub/9dir"
-  sha256 5976c53be393dcb35a8efebe950f8a917e9f23631747e4dcc2e217f19d13cafe
+  sha256 a9a31b8468e800b3e6959c855796b3d909b22dc175ea223997f3d8673284871d
 end
 
 [fn fetch]
@@ -45,15 +45,23 @@ end
   echo "installing 9dir..."
   env HOME
   set home ${_env_result}
-  set bindir "${home}/.local/bin"
+  set store_dir "${home}/.pack/store/9dir"
+  set bin_dir "${home}/.local/bin"
   set configdir "${home}/.config/9dir"
-  mkdir ${bindir}
+  set store_target "${store_dir}/9dir"
+  set symlink_target "${bin_dir}/9dir"
+  
+  # Create store, bin, and config directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
   mkdir ${configdir}
   
   if exists 9dir
-    run cp ./9dir ${bindir}/9dir
-    run chmod +x "${bindir}/9dir"
-    echo "installed 9dir to ${bindir}/9dir"
+    run cp ./9dir ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "installed 9dir to ${store_target}"
+    echo "created symlink at ${symlink_target}"
     echo "config will be created at ${configdir}/config on first run"
   else
     echo "9dir binary not found after build"
