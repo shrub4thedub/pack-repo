@@ -6,7 +6,7 @@
   src-url  https://github.com/cr33dev/Crystal-Orb.git
   src-ref  HEAD
   bin      main.py
-  license  unknown
+  license  GPL-3.0
 end
 
 [fn install]
