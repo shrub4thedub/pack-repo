@@ -1,0 +1,156 @@
+[data -c pkg]
+  name     cava
+  desc     console-based audio visualizer for ALSA/PulseAudio
+  ver      latest
+  src-type git
+  src-url  https://github.com/karlstav/cava.git
+  src-ref  HEAD
+  bin      cava
+  license  MIT
+end
+
+[fn check_deps]
+  echo "Checking build dependencies..."
+  
+  # Check for required build tools
+  run which gcc
+  run which make
+  run which pkg-config
+  run which autotools-dev
+  run which autoconf
+  run which libtool
+  
+  echo "✓ Build tools found"
+  echo "Note: cava requires development libraries for ALSA/PulseAudio"
+  echo "Install: libasound2-dev libpulse-dev libfftw3-dev (Ubuntu/Debian)"
+  echo "Or: alsa-lib-devel pulseaudio-libs-devel fftw-devel (RHEL/CentOS)"
+end
+
+[fn fetch]
+  set repo "https://github.com/karlstav/cava.git"
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/cava_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir ${tmpdir}/cava
+  
+  echo "Fetching cava from GitHub..."
+  run git clone --depth=1 ${repo} ${srcdir}
+  
+  cd ${srcdir}
+end
+
+[fn build]
+  echo "Building cava..."
+  echo "This may take a few minutes..."
+  
+  # Generate build files
+  run ./autogen.sh
+  
+  # Configure with default options
+  run ./configure
+  
+  # Build
+  run make
+  
+  # Verify the binary was created
+  if exists ./cava
+    echo "✓ cava built successfully"
+  else
+    echo "✗ cava binary not found after build"
+    echo "Check that all development libraries are installed"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing cava..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cava"
+  set bin_dir "${home}/.local/bin"
+  set config_dir "${home}/.config/cava"
+  set shelf_target "${shelf_dir}/cava"
+  set symlink_target "${bin_dir}/cava"
+  
+  # Create shelf, bin, and config directories
+  mkdir ${shelf_dir}
+  mkdir ${bin_dir}
+  mkdir ${config_dir}
+  
+  # Install the binary
+  if exists ./cava
+    run cp ./cava ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed cava to ${shelf_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    # Copy example config if it exists
+    if exists ./example_files/config
+      run cp ./example_files/config ${config_dir}/config
+      echo "Installed example config to ${config_dir}/config"
+    end
+    
+    echo ""
+    echo "cava installation complete!"
+    echo "Run 'cava' to start the audio visualizer"
+    echo "Edit ~/.config/cava/config to customize settings"
+  else
+    echo "✗ cava binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "cava installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling cava..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cava"
+  set bin_dir "${home}/.local/bin"
+  set config_dir "${home}/.config/cava"
+  set symlink_target "${bin_dir}/cava"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
+  end
+  
+  # Ask about config directory
+  if exists ${config_dir}
+    echo "config directory remains at ${config_dir}"
+    echo "remove manually if desired"
+  end
+  
+  echo "cava uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
