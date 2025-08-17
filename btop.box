@@ -62,27 +62,27 @@ end
   echo "Installing btop..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/btop"
+  set shelf_dir "${home}/.pack/shelf/btop"
   set bin_dir "${home}/.local/bin"
-  set store_target "${store_dir}/btop"
+  set shelf_target "${shelf_dir}/btop"
   set symlink_target "${bin_dir}/btop"
   
-  # Create store and bin directories
-  mkdir ${store_dir}
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
   # Install the binary
   if exists ./bin/btop
-    run cp ./bin/btop ${store_target}
-    run chmod +x ${store_target}
-    run ln -sf ${store_target} ${symlink_target}
-    echo "Installed btop to ${store_target}"
+    run cp ./bin/btop ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed btop to ${shelf_target}"
     echo "Created symlink at ${symlink_target}"
     
     # Copy themes and other resources if they exist
     if exists ./themes
-      run cp -r ./themes ${store_dir}/
-      echo "Installed themes to ${store_dir}/themes"
+      run cp -r ./themes ${shelf_dir}/
+      echo "Installed themes to ${shelf_dir}/themes"
     end
     
     echo ""
@@ -106,7 +106,7 @@ end
   echo "Uninstalling btop..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/btop"
+  set shelf_dir "${home}/.pack/shelf/btop"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/btop"
   
@@ -116,10 +116,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "btop uninstalled successfully"

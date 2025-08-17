@@ -40,20 +40,20 @@ end
   echo "Installing edith..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/edith"
+  set shelf_dir "${home}/.pack/shelf/edith"
   set bin_dir "${home}/.local/bin"
-  set store_target "${store_dir}/edith"
+  set shelf_target "${shelf_dir}/edith"
   set symlink_target "${bin_dir}/edith"
   
-  # Create store and bin directories
-  mkdir ${store_dir}
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
   if exists ./edith
-    run cp ./edith ${store_target}
-    run chmod +x ${store_target}
-    run ln -sf ${store_target} ${symlink_target}
-    echo "Installed edith to ${store_target}"
+    run cp ./edith ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed edith to ${shelf_target}"
     echo "Created symlink at ${symlink_target}"
   else
     echo "edith binary not found after build"
@@ -74,7 +74,7 @@ end
   echo "Uninstalling edith..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/edith"
+  set shelf_dir "${home}/.pack/shelf/edith"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/edith"
   
@@ -84,10 +84,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "edith uninstalled successfully"
