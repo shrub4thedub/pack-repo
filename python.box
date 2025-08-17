@@ -18,12 +18,23 @@ end
   run which git
   
   echo "✓ Core build tools found"
-  echo "Note: Python requires additional development libraries:"
-  echo "Ubuntu/Debian: build-essential libssl-dev zlib1g-dev libncurses5-dev"
-  echo "               libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev"
-  echo "               libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev libffi-dev"
-  echo "RHEL/CentOS:   gcc openssl-devel zlib-devel readline-devel sqlite-devel"
-  echo "               gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel"
+  echo ""
+  echo "IMPORTANT: Python requires development libraries for full functionality"
+  echo "Install these packages for optimal Python build:"
+  echo ""
+  echo "Ubuntu/Debian:"
+  echo "  sudo apt install build-essential libssl-dev zlib1g-dev libncurses5-dev"
+  echo "  sudo apt install libncursesw5-dev libreadline-dev libsqlite3-dev"
+  echo "  sudo apt install libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev"
+  echo "  sudo apt install liblzma-dev libffi-dev uuid-dev"
+  echo ""
+  echo "RHEL/CentOS/Fedora:"
+  echo "  sudo dnf install gcc openssl-devel zlib-devel readline-devel"
+  echo "  sudo dnf install sqlite-devel gdbm-devel db4-devel libpcap-devel"
+  echo "  sudo dnf install xz-devel libffi-devel libuuid-devel"
+  echo ""
+  echo "Without these libraries, some Python modules may not work (especially SSL/TLS)"
+  echo ""
 end
 
 [fn fetch]
@@ -55,7 +66,7 @@ end
   
   # Configure with optimizations and standard library
   echo "Configuring build..."
-  run ./configure --enable-optimizations --with-ensurepip=install
+  run ./configure --enable-optimizations --with-ensurepip=install --enable-shared
   
   # Build Python (use all available cores)
   echo "Compiling Python..."
@@ -81,45 +92,50 @@ end
   set home ${_env_result}
   set shelf_dir "${home}/.pack/shelf/python"
   set bin_dir "${home}/.local/bin"
-  set shelf_target "${shelf_dir}/python3"
-  set symlink_target "${bin_dir}/python3"
   
   # Create shelf and bin directories
   mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
-  # Install Python to a temporary prefix first
-  set install_prefix "${tmpdir}/install"
-  echo "Installing to temporary location..."
-  run make install DESTDIR=${install_prefix} prefix=/usr/local
+  # Install Python directly to shelf directory
+  echo "Installing Python to shelf..."
+  run make altinstall prefix=${shelf_dir}
   
-  # Copy the built Python binary
-  set python_src "${install_prefix}/usr/local/bin/python3"
-  if exists ${python_src}
-    run cp ${python_src} ${shelf_target}
-    run chmod +x ${shelf_target}
-    run ln -sf ${shelf_target} ${symlink_target}
-    echo "Installed python3 to ${shelf_target}"
-    echo "Created symlink at ${symlink_target}"
+  # Find the actual Python binary (version-specific)
+  glob "${shelf_dir}/bin/python3.*"
+  set python_files ${_glob_result}
+  
+  if exists "${python_files[0]}"
+    set python_binary ${python_files[0]}
+    set python_version_name $(basename ${python_binary})
     
-    # Also create python symlink
-    run ln -sf ${shelf_target} "${bin_dir}/python"
-    echo "Created python symlink at ${bin_dir}/python"
+    echo "Found Python binary: ${python_binary}"
     
-    # Copy Python standard library if available
-    set stdlib_src "${install_prefix}/usr/local/lib"
-    set stdlib_dest "${shelf_dir}/lib"
-    if exists ${stdlib_src}
-      run cp -r ${stdlib_src} ${shelf_dest}
-      echo "Installed Python standard library"
-    end
+    # Create main python3 symlink in shelf
+    run ln -sf ${python_binary} "${shelf_dir}/bin/python3"
+    run ln -sf ${python_binary} "${shelf_dir}/bin/python"
+    
+    # Create symlinks in user bin directory
+    run ln -sf "${shelf_dir}/bin/python3" "${bin_dir}/python3"
+    run ln -sf "${shelf_dir}/bin/python" "${bin_dir}/python"
+    
+    echo "Installed ${python_version_name} to ${shelf_dir}"
+    echo "Created symlinks in ${bin_dir}"
+    
+    # Test the installation
+    echo "Testing Python installation..."
+    run ${python_binary} --version
     
     echo ""
     echo "Python installation complete!"
     echo "Run 'python3 --version' to verify installation"
-    echo "Run 'python3 -m pip --version' to check pip"
+    echo "Note: SSL support may be limited if development libraries were missing"
   else
-    echo "✗ Python installation failed - binary not found"
+    echo "✗ Python installation failed - no Python binary found"
+    echo "Available files in ${shelf_dir}/bin/:"
+    if exists "${shelf_dir}/bin"
+      run ls -la "${shelf_dir}/bin/"
+    end
     exit 1
   end
 end
