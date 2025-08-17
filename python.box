@@ -1,0 +1,168 @@
+[data -c pkg]
+  name     python
+  desc     Python programming language built from official CPython source
+  ver      main
+  src-type git
+  src-url  https://github.com/python/cpython.git
+  src-ref  main
+  bin      python3
+  license  Python-2.0
+end
+
+[fn check_deps]
+  echo "Checking build dependencies..."
+  
+  # Check for required build tools
+  run which gcc
+  run which make
+  run which git
+  
+  echo "✓ Core build tools found"
+  echo "Note: Python requires additional development libraries:"
+  echo "Ubuntu/Debian: build-essential libssl-dev zlib1g-dev libncurses5-dev"
+  echo "               libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev"
+  echo "               libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev libffi-dev"
+  echo "RHEL/CentOS:   gcc openssl-devel zlib-devel readline-devel sqlite-devel"
+  echo "               gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel"
+end
+
+[fn fetch]
+  echo "Cloning CPython repository..."
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/python_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir "${tmpdir}/cpython"
+  
+  # Clone the repository
+  cd ${tmpdir}
+  run git clone --depth 1 https://github.com/python/cpython.git
+  
+  cd ${srcdir}
+  echo "✓ CPython source downloaded"
+end
+
+[fn build]
+  echo "Building Python from source..."
+  echo "This will take 10-20 minutes depending on your system..."
+  
+  # Configure with optimizations and standard library
+  echo "Configuring build..."
+  run ./configure --enable-optimizations --with-ensurepip=install
+  
+  # Build Python (use all available cores)
+  echo "Compiling Python..."
+  run make -j$(nproc)
+  
+  # Verify the build succeeded
+  if exists ./python
+    echo "✓ Python built successfully"
+    
+    # Test basic functionality
+    echo "Testing Python build..."
+    run ./python -c "import sys; print(f'Python {sys.version}')"
+  else
+    echo "✗ Python build failed"
+    echo "Check that all development libraries are installed"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing Python..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/python"
+  set bin_dir "${home}/.local/bin"
+  set shelf_target "${shelf_dir}/python3"
+  set symlink_target "${bin_dir}/python3"
+  
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
+  mkdir ${bin_dir}
+  
+  # Install Python to a temporary prefix first
+  set install_prefix "${tmpdir}/install"
+  echo "Installing to temporary location..."
+  run make install DESTDIR=${install_prefix} prefix=/usr/local
+  
+  # Copy the built Python binary
+  set python_src "${install_prefix}/usr/local/bin/python3"
+  if exists ${python_src}
+    run cp ${python_src} ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed python3 to ${shelf_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    # Also create python symlink
+    run ln -sf ${shelf_target} "${bin_dir}/python"
+    echo "Created python symlink at ${bin_dir}/python"
+    
+    # Copy Python standard library if available
+    set stdlib_src "${install_prefix}/usr/local/lib"
+    set stdlib_dest "${shelf_dir}/lib"
+    if exists ${stdlib_src}
+      run cp -r ${stdlib_src} ${shelf_dest}
+      echo "Installed Python standard library"
+    end
+    
+    echo ""
+    echo "Python installation complete!"
+    echo "Run 'python3 --version' to verify installation"
+    echo "Run 'python3 -m pip --version' to check pip"
+  else
+    echo "✗ Python installation failed - binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "Python installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling Python..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/python"
+  set bin_dir "${home}/.local/bin"
+  
+  # Remove symlinks
+  if exists "${bin_dir}/python3"
+    delete "${bin_dir}/python3"
+    echo "removed symlink ${bin_dir}/python3"
+  end
+  
+  if exists "${bin_dir}/python"
+    delete "${bin_dir}/python"
+    echo "removed symlink ${bin_dir}/python"
+  end
+  
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
+  end
+  
+  echo "Python uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
