@@ -1,33 +1,29 @@
 [data -c pkg]
   name     cava
   desc     console-based audio visualizer for ALSA/PulseAudio
-  ver      latest
-  src-type git
-  src-url  https://github.com/karlstav/cava.git
-  src-ref  HEAD
+  ver      0.10.4
+  src-type tarball
+  src-url  https://github.com/karlstav/cava/releases/download/0.10.4/cava-0.10.4.tar.gz
+  src-ref  0.10.4
   bin      cava
   license  MIT
 end
 
 [fn check_deps]
-  echo "Checking build dependencies..."
+  echo "Checking dependencies..."
   
-  # Check for required build tools
-  run which gcc
-  run which make
-  run which pkg-config
-  run which autotools-dev
-  run which autoconf
-  run which libtool
+  # Check for required tools
+  run which wget
+  run which tar
   
-  echo "✓ Build tools found"
-  echo "Note: cava requires development libraries for ALSA/PulseAudio"
-  echo "Install: libasound2-dev libpulse-dev libfftw3-dev (Ubuntu/Debian)"
-  echo "Or: alsa-lib-devel pulseaudio-libs-devel fftw-devel (RHEL/CentOS)"
+  echo "✓ Download tools found"
+  echo "Note: cava requires ALSA/PulseAudio runtime libraries"
+  echo "Install: libasound2 libpulse0 libfftw3-3 (Ubuntu/Debian)"
+  echo "Or: alsa-lib pulseaudio-libs fftw (RHEL/CentOS)"
 end
 
 [fn fetch]
-  set repo "https://github.com/karlstav/cava.git"
+  set tarball_url "https://github.com/karlstav/cava/releases/download/0.10.4/cava-0.10.4.tar.gz"
   
   # Use ~/.pack/tmp instead of mktemp
   env HOME
@@ -39,36 +35,19 @@ end
   set unique_dir "${pack_tmp}/cava_$$"
   mkdir ${unique_dir}
   set tmpdir ${unique_dir}
-  set srcdir ${tmpdir}/cava
+  set tarball_path "${tmpdir}/cava-0.10.4.tar.gz"
+  set srcdir "${tmpdir}/cava-0.10.4"
   
-  echo "Fetching cava from GitHub..."
-  run git clone --depth=1 ${repo} ${srcdir}
+  echo "Downloading cava v0.10.4 tarball..."
+  run wget -O ${tarball_path} ${tarball_url}
+  
+  echo "Extracting tarball..."
+  cd ${tmpdir}
+  run tar -xzf cava-0.10.4.tar.gz
   
   cd ${srcdir}
 end
 
-[fn build]
-  echo "Building cava..."
-  echo "This may take a few minutes..."
-  
-  # Generate build files
-  run ./autogen.sh
-  
-  # Configure with default options
-  run ./configure
-  
-  # Build
-  run make
-  
-  # Verify the binary was created
-  if exists ./cava
-    echo "✓ cava built successfully"
-  else
-    echo "✗ cava binary not found after build"
-    echo "Check that all development libraries are installed"
-    exit 1
-  end
-end
 
 [fn install]
   echo "Installing cava..."
@@ -85,7 +64,7 @@ end
   mkdir ${bin_dir}
   mkdir ${config_dir}
   
-  # Install the binary
+  # Install the binary from extracted tarball
   if exists ./cava
     run cp ./cava ${shelf_target}
     run chmod +x ${shelf_target}
@@ -104,7 +83,7 @@ end
     echo "Run 'cava' to start the audio visualizer"
     echo "Edit ~/.config/cava/config to customize settings"
   else
-    echo "✗ cava binary not found"
+    echo "✗ cava binary not found in tarball"
     exit 1
   end
 end
@@ -150,7 +129,6 @@ end
 [main]
   check_deps
   fetch
-  build
   install
   cleanup
 end
