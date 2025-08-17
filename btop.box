@@ -1,0 +1,134 @@
+[data -c pkg]
+  name     btop
+  desc     resource monitor that shows usage and stats for processor memory disks network and processes
+  ver      latest
+  src-type git
+  src-url  https://github.com/aristocratos/btop.git
+  src-ref  HEAD
+  bin      btop
+  license  Apache-2.0
+end
+
+[fn check_deps]
+  echo "Checking build dependencies..."
+  
+  # Check for required compilers
+  run which gcc
+  run which g++
+  run which make
+  
+  echo "✓ Build tools found"
+  echo "Note: btop requires GCC 11+ or Clang 16+ for compilation"
+end
+
+[fn fetch]
+  set repo "https://github.com/aristocratos/btop.git"
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/btop_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir ${tmpdir}/btop
+  
+  echo "Fetching btop from GitHub..."
+  run git clone --depth=1 ${repo} ${srcdir}
+  
+  cd ${srcdir}
+end
+
+[fn build]
+  echo "Building btop..."
+  echo "This may take a few minutes..."
+  
+  # Build with optimizations
+  run make ADDFLAGS="-march=native"
+  
+  # Verify the binary was created
+  if exists ./bin/btop
+    echo "✓ btop built successfully"
+  else
+    echo "✗ btop binary not found after build"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing btop..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/btop"
+  set bin_dir "${home}/.local/bin"
+  set store_target "${store_dir}/btop"
+  set symlink_target "${bin_dir}/btop"
+  
+  # Create store and bin directories
+  mkdir ${store_dir}
+  mkdir ${bin_dir}
+  
+  # Install the binary
+  if exists ./bin/btop
+    run cp ./bin/btop ${store_target}
+    run chmod +x ${store_target}
+    run ln -sf ${store_target} ${symlink_target}
+    echo "Installed btop to ${store_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    # Copy themes and other resources if they exist
+    if exists ./themes
+      run cp -r ./themes ${store_dir}/
+      echo "Installed themes to ${store_dir}/themes"
+    end
+    
+    echo ""
+    echo "btop installation complete!"
+    echo "Run 'btop' to start the resource monitor"
+  else
+    echo "✗ btop binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "btop installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling btop..."
+  env HOME
+  set home ${_env_result}
+  set store_dir "${home}/.pack/store/btop"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/btop"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove store directory
+  if exists ${store_dir}
+    delete ${store_dir}
+    echo "removed store directory ${store_dir}"
+  end
+  
+  echo "btop uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
