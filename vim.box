@@ -48,7 +48,7 @@ end
   echo "Configuring Vim build..."
   env HOME
   set home ${_env_result}
-  set prefix "${home}/.pack/store/vim"
+  set prefix "${home}/.pack/shelf/vim"
   
   run ./configure --prefix=${prefix} --with-features=normal --enable-multibyte --disable-gui --without-x
 end
@@ -65,14 +65,14 @@ end
   
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/vim"
+  set shelf_dir "${home}/.pack/shelf/vim"
   set bin_dir "${home}/.local/bin"
   
   # Create bin directory and symlink
   mkdir ${bin_dir}
-  run ln -sf ${store_dir}/bin/vim ${bin_dir}/vim
+  run ln -sf ${shelf_dir}/bin/vim ${bin_dir}/vim
   
-  echo "Vim installed to ${store_dir}/bin/vim"
+  echo "Vim installed to ${shelf_dir}/bin/vim"
   echo "Created symlink at ${bin_dir}/vim"
   echo "Run 'vim' to start the editor"
 end
@@ -90,7 +90,7 @@ end
   echo "Uninstalling vim..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/vim"
+  set shelf_dir "${home}/.pack/shelf/vim"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/vim"
   
@@ -100,10 +100,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "vim uninstalled successfully"

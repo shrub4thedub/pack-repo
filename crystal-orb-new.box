@@ -25,33 +25,33 @@ end
   echo "Installing crystal-orb..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/crystal-orb"
+  set shelf_dir "${home}/.pack/shelf/crystal-orb"
   set bin_dir "${home}/.local/bin"
   
   # Create directories
-  mkdir ${store_dir}
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
-  # Clone directly to store directory
-  run git clone --depth=1 https://github.com/cr33dev/news-feed-discord-bot-for-linux.git ${store_dir}
+  # Clone directly to shelf directory
+  run git clone --depth=1 https://github.com/cr33dev/news-feed-discord-bot-for-linux.git ${shelf_dir}
   
   # Install Python dependencies
   run pip3 install --user discord.py feedparser requests
   
-  echo "Installed crystal-orb to ${store_dir}"
-  echo "Edit the bot configuration in main.py and run: cd ${store_dir} && python3 main.py"
+  echo "Installed crystal-orb to ${shelf_dir}"
+  echo "Edit the bot configuration in main.py and run: cd ${shelf_dir} && python3 main.py"
 end
 
 [fn -i uninstall]
   echo "Uninstalling crystal-orb..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/crystal-orb"
+  set shelf_dir "${home}/.pack/shelf/crystal-orb"
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "crystal-orb uninstalled successfully"

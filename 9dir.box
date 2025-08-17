@@ -45,22 +45,22 @@ end
   echo "installing 9dir..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/9dir"
+  set shelf_dir "${home}/.pack/shelf/9dir"
   set bin_dir "${home}/.local/bin"
   set configdir "${home}/.config/9dir"
-  set store_target "${store_dir}/9dir"
+  set shelf_target "${shelf_dir}/9dir"
   set symlink_target "${bin_dir}/9dir"
   
-  # Create store, bin, and config directories
-  mkdir ${store_dir}
+  # Create shelf, bin, and config directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   mkdir ${configdir}
   
   if exists 9dir
-    run cp ./9dir ${store_target}
-    run chmod +x ${store_target}
-    run ln -sf ${store_target} ${symlink_target}
-    echo "installed 9dir to ${store_target}"
+    run cp ./9dir ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "installed 9dir to ${shelf_target}"
     echo "created symlink at ${symlink_target}"
     echo "config will be created at ${configdir}/config on first run"
   else
@@ -82,7 +82,7 @@ end
   echo "Uninstalling 9dir..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/9dir"
+  set shelf_dir "${home}/.pack/shelf/9dir"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/9dir"
   
@@ -92,10 +92,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "9dir uninstalled successfully"

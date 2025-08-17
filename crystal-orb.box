@@ -18,7 +18,7 @@ end
   # Create directory
   mkdir ${shelf_dir}
   
-  # Clone directly to store directory
+  # Clone directly to shelf directory
   run git clone --depth=1 https://github.com/cr33dev/Crystal-Orb.git ${shelf_dir}
   
   # Install Python dependencies
@@ -34,7 +34,7 @@ end
   set home ${_env_result}
   set shelf_dir "${home}/.pack/shelf/crystal-orb"
   
-  if exists ${store_dir}
+  if exists ${shelf_dir}
     delete ${shelf_dir}
     echo "removed shelf directory ${shelf_dir}"
   end

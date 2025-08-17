@@ -25,21 +25,21 @@ end
   echo "Installing pfetch..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/pfetch"
+  set shelf_dir "${home}/.pack/shelf/pfetch"
   set bin_dir "${home}/.local/bin"
   
-  # Create store and bin directories
-  mkdir ${store_dir}
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
-  # Copy pfetch to store directory
-  run cp pfetch ${store_dir}/pfetch
-  run chmod +x ${store_dir}/pfetch
+  # Copy pfetch to shelf directory
+  run cp pfetch ${shelf_dir}/pfetch
+  run chmod +x ${shelf_dir}/pfetch
   
   # Create symlink in bin directory
-  run ln -sf ${store_dir}/pfetch ${bin_dir}/pfetch
+  run ln -sf ${shelf_dir}/pfetch ${bin_dir}/pfetch
   
-  echo "Installed pfetch to ${store_dir}/pfetch"
+  echo "Installed pfetch to ${shelf_dir}/pfetch"
   echo "Created symlink at ${bin_dir}/pfetch"
   echo "Run 'pfetch' to display system information"
 end
@@ -56,7 +56,7 @@ end
   echo "Uninstalling pfetch..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/pfetch"
+  set shelf_dir "${home}/.pack/shelf/pfetch"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/pfetch"
   
@@ -66,10 +66,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "pfetch uninstalled successfully"

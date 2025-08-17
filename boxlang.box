@@ -32,14 +32,14 @@ end
   echo "Installing boxlang..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/boxlang"
+  set shelf_dir "${home}/.pack/shelf/boxlang"
   set bin_dir "${home}/.local/bin"
-  set store_target "${store_dir}/box"
+  set shelf_target "${shelf_dir}/box"
   set symlink_target "${bin_dir}/box"
-  set temp_target "${store_dir}/box.new"
+  set temp_target "${shelf_dir}/box.new"
   
-  # Create store and bin directories
-  mkdir ${store_dir}
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
   if exists box
@@ -48,12 +48,12 @@ end
     run chmod +x ${temp_target}
     
     # Move temporary file to final location (atomic operation)
-    run mv ${temp_target} ${store_target}
+    run mv ${temp_target} ${shelf_target}
     
     # Update symlink
-    run ln -sf ${store_target} ${symlink_target}
+    run ln -sf ${shelf_target} ${symlink_target}
     
-    echo "Installed boxlang to ${store_target}"
+    echo "Installed boxlang to ${shelf_target}"
     echo "Created symlink at ${symlink_target}"
     echo "boxlang now available as 'box'"
     echo "Note: You may need to restart your shell to use the updated version"
@@ -76,7 +76,7 @@ end
   echo "Uninstalling boxlang..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/boxlang"
+  set shelf_dir "${home}/.pack/shelf/boxlang"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/box"
   
@@ -86,10 +86,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "boxlang uninstalled successfully"

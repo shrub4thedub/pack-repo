@@ -27,21 +27,21 @@ end
   echo "Installing fml..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/fml"
+  set shelf_dir "${home}/.pack/shelf/fml"
   set bin_dir "${home}/.local/bin"
   
-  # Create store and bin directories
-  mkdir ${store_dir}
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
-  # Copy fml script to store directory
-  run cp fml ${store_dir}/fml
-  run chmod +x ${store_dir}/fml
+  # Copy fml script to shelf directory
+  run cp fml ${shelf_dir}/fml
+  run chmod +x ${shelf_dir}/fml
   
   # Create symlink in bin directory
-  run ln -sf ${store_dir}/fml ${bin_dir}/fml
+  run ln -sf ${shelf_dir}/fml ${bin_dir}/fml
   
-  echo "Installed fml to ${store_dir}/fml"
+  echo "Installed fml to ${shelf_dir}/fml"
   echo "Created symlink at ${bin_dir}/fml"
   echo "Run 'fml' to start the file manager"
 end
@@ -59,7 +59,7 @@ end
   echo "Uninstalling fml..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/fml"
+  set shelf_dir "${home}/.pack/shelf/fml"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/fml"
   
@@ -69,10 +69,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "fml uninstalled successfully"

@@ -40,22 +40,22 @@ end
   echo "installing shrub9..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/shrub9"
+  set shelf_dir "${home}/.pack/shelf/shrub9"
   set bin_dir "${home}/.local/bin"
   set configdir "${home}/.config/shrub9"
-  set store_target "${store_dir}/shrub9"
+  set shelf_target "${shelf_dir}/shrub9"
   set symlink_target "${bin_dir}/shrub9"
   
-  # Create store, bin, and config directories
-  mkdir ${store_dir}
+  # Create shelf, bin, and config directories
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   mkdir ${configdir}
   
   if exists shrub9
-    run cp ./shrub9 ${store_target}
-    run chmod +x ${store_target}
-    run ln -sf ${store_target} ${symlink_target}
-    echo "installed shrub9 to ${store_target}"
+    run cp ./shrub9 ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "installed shrub9 to ${shelf_target}"
     echo "created symlink at ${symlink_target}"
     
     if exists sample_config
@@ -84,7 +84,7 @@ end
   echo "Uninstalling shrub9..."
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/shrub9"
+  set shelf_dir "${home}/.pack/shelf/shrub9"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/shrub9"
   
@@ -94,10 +94,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
   
   echo "shrub9 uninstalled successfully"

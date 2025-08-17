@@ -3,55 +3,55 @@
 [fn -h putbin src name]
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/${name}"
+  set shelf_dir "${home}/.pack/shelf/${name}"
   set bin_dir "${home}/.local/bin"
-  set store_target "${store_dir}/${name}"
+  set shelf_target "${shelf_dir}/${name}"
   set symlink_target "${bin_dir}/${name}"
   
   # Create directories
-  mkdir ${store_dir}
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
-  # Copy binary to store
-  run cp ${src} ${store_target}
-  run chmod +x ${store_target}
+  # Copy binary to shelf
+  run cp ${src} ${shelf_target}
+  run chmod +x ${shelf_target}
   
   # Create symlink
-  run ln -sf ${store_target} ${symlink_target}
+  run ln -sf ${shelf_target} ${symlink_target}
   
-  echo "installed ${name} to ${store_target}"
+  echo "installed ${name} to ${shelf_target}"
   echo "created symlink at ${symlink_target}"
 end
 
 [fn -h putbin_atomic src name]
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/${name}"
+  set shelf_dir "${home}/.pack/shelf/${name}"
   set bin_dir "${home}/.local/bin"
-  set store_target "${store_dir}/${name}"
+  set shelf_target "${shelf_dir}/${name}"
   set symlink_target "${bin_dir}/${name}"
-  set temp_target "${store_dir}/${name}.new"
+  set temp_target "${shelf_dir}/${name}.new"
   
   # Create directories
-  mkdir ${store_dir}
+  mkdir ${shelf_dir}
   mkdir ${bin_dir}
   
   # Atomic installation to avoid "text file busy" errors
   run cp ${src} ${temp_target}
   run chmod +x ${temp_target}
-  run mv ${temp_target} ${store_target}
+  run mv ${temp_target} ${shelf_target}
   
   # Create symlink
-  run ln -sf ${store_target} ${symlink_target}
+  run ln -sf ${shelf_target} ${symlink_target}
   
-  echo "installed ${name} to ${store_target}"
+  echo "installed ${name} to ${shelf_target}"
   echo "created symlink at ${symlink_target}"
 end
 
 [fn -h removebin name]
   env HOME
   set home ${_env_result}
-  set store_dir "${home}/.pack/store/${name}"
+  set shelf_dir "${home}/.pack/shelf/${name}"
   set bin_dir "${home}/.local/bin"
   set symlink_target "${bin_dir}/${name}"
   
@@ -61,10 +61,10 @@ end
     echo "removed symlink ${symlink_target}"
   end
   
-  # Remove store directory
-  if exists ${store_dir}
-    delete ${store_dir}
-    echo "removed store directory ${store_dir}"
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
   end
 end
 
@@ -82,11 +82,11 @@ end
   echo "installed directory to ${full_dest}"
 end
 
-[fn -h get_store_path name]
+[fn -h get_shelf_path name]
   env HOME
   set home ${_env_result}
-  set store_path "${home}/.pack/store/${name}"
-  echo ${store_path}
+  set shelf_path "${home}/.pack/shelf/${name}"
+  echo ${shelf_path}
 end
 
 [fn -h get_config_path name]
