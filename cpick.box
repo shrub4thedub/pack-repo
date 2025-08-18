@@ -1,0 +1,140 @@
+[data -c pkg]
+  name     cpick
+  desc     X11 color picker with mouse and keyboard controls
+  ver      latest
+  src-type git
+  src-url  https://codeberg.org/aerphanas/cpick.git
+  src-ref  HEAD
+  bin      cpick
+  license  BSD-2-Clause
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for required build tools
+  run which cc
+  run which git
+  
+  echo "✓ Core build tools found"
+  echo "Note: cpick requires X11 development libraries"
+  echo "Ubuntu/Debian: sudo apt install libx11-dev"
+  echo "RHEL/CentOS:   sudo dnf install libX11-devel"
+  echo "Arch Linux:    sudo pacman -S libx11"
+end
+
+[fn fetch]
+  echo "Cloning cpick repository..."
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/cpick_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir "${tmpdir}/cpick"
+  
+  # Clone the repository
+  cd ${tmpdir}
+  run git clone https://codeberg.org/aerphanas/cpick.git
+  
+  cd ${srcdir}
+  echo "✓ cpick source downloaded"
+end
+
+[fn build]
+  echo "Building cpick..."
+  
+  # Simple C compilation as specified in README
+  run cc -o cpick cpick.c -lX11
+  
+  # Verify the binary was created
+  if exists ./cpick
+    echo "✓ cpick built successfully"
+  else
+    echo "✗ cpick build failed"
+    echo "Make sure libX11 development libraries are installed"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing cpick..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cpick"
+  set bin_dir "${home}/.local/bin"
+  set shelf_target "${shelf_dir}/cpick"
+  set symlink_target "${bin_dir}/cpick"
+  
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
+  mkdir ${bin_dir}
+  
+  # Install the binary
+  if exists ./cpick
+    run cp ./cpick ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed cpick to ${shelf_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    echo ""
+    echo "cpick installation complete!"
+    echo "Run 'cpick' to start the color picker"
+    echo ""
+    echo "Controls:"
+    echo "  Left Click:  Pick color and quit"
+    echo "  Right Click: Pick color, continue"
+    echo "  Arrow Keys:  Move pointer"
+    echo "  Enter:       Pick color and quit"
+    echo "  Space:       Pick color, continue"
+    echo "  Esc:         Quit"
+  else
+    echo "✗ cpick binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "cpick installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling cpick..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cpick"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/cpick"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
+  end
+  
+  echo "cpick uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
