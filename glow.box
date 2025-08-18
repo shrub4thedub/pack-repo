@@ -1,0 +1,135 @@
+[data -c pkg]
+  name     glow
+  desc     render markdown on the CLI with pizzazz
+  ver      latest
+  src-type git
+  src-url  https://github.com/charmbracelet/glow.git
+  src-ref  HEAD
+  bin      glow
+  license  MIT
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for required build tools
+  run which go
+  run which git
+  
+  echo "✓ Build tools found"
+  echo "Note: glow requires Go 1.17 or later"
+end
+
+[fn fetch]
+  echo "Cloning glow repository..."
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/glow_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir "${tmpdir}/glow"
+  
+  # Clone the repository
+  cd ${tmpdir}
+  run git clone https://github.com/charmbracelet/glow.git
+  
+  cd ${srcdir}
+  echo "✓ glow source downloaded"
+end
+
+[fn build]
+  echo "Building glow..."
+  echo "This may take a few minutes..."
+  
+  # Build with Go
+  run go build -o glow .
+  
+  # Verify the binary was created
+  if exists ./glow
+    echo "✓ glow built successfully"
+  else
+    echo "✗ glow build failed"
+    echo "Make sure Go 1.17+ is installed and properly configured"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing glow..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/glow"
+  set bin_dir "${home}/.local/bin"
+  set shelf_target "${shelf_dir}/glow"
+  set symlink_target "${bin_dir}/glow"
+  
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
+  mkdir ${bin_dir}
+  
+  # Install the binary
+  if exists ./glow
+    run cp ./glow ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed glow to ${shelf_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    echo ""
+    echo "glow installation complete!"
+    echo "Run 'glow' to start using the markdown reader"
+    echo "Usage examples:"
+    echo "  glow README.md              # render a markdown file"
+    echo "  glow -p README.md           # page through file"
+    echo "  echo '# Hello' | glow       # pipe markdown"
+    echo "  glow stash                  # use built-in stash"
+  else
+    echo "✗ glow binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "glow installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling glow..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/glow"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/glow"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
+  end
+  
+  echo "glow uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
