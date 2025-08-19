@@ -52,8 +52,11 @@ end
   mkdir ${configdir}
   
   if exists shrub9
-    run cp ./shrub9 ${shelf_target}
-    run chmod +x ${shelf_target}
+    # Handle "text file busy" by using atomic replacement
+    set temp_target "${shelf_target}.new"
+    run cp ./shrub9 ${temp_target}
+    run chmod +x ${temp_target}
+    run mv ${temp_target} ${shelf_target}
     run ln -sf ${shelf_target} ${symlink_target}
     echo "installed shrub9 to ${shelf_target}"
     echo "created symlink at ${symlink_target}"
