@@ -33,7 +33,7 @@ end
 
 [fn build]
   echo "building shrub9..."
-  run gcc -o shrub9 9wm.c client.c cursor.c error.c event.c grab.c main.c manage.c menu.c -lX11
+  run cc -DSHAPE -DCOLOR -Wall -pedantic -ansi -D_XOPEN_SOURCE -o shrub9 9wm.c event.c manage.c menu.c client.c grab.c cursor.c error.c config.c workspace.c spaces.c -lXext -lX11
 end
 
 [fn install]
