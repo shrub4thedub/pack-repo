@@ -1,0 +1,141 @@
+[data -c pkg]
+  name     cbonsai
+  desc     grow bonsai trees in your terminal
+  ver      latest
+  src-type git
+  src-url  https://gitlab.com/jallbrit/cbonsai.git
+  src-ref  HEAD
+  bin      cbonsai
+  license  GPL-3.0
+end
+
+[fn check_deps]
+  echo "Checking dependencies..."
+  
+  # Check for required build tools
+  run which gcc
+  run which make
+  run which git
+  
+  echo "✓ Build tools found"
+  echo "Note: cbonsai requires ncurses development libraries"
+  echo "Ubuntu/Debian: sudo apt install libncurses5-dev"
+  echo "RHEL/CentOS:   sudo dnf install ncurses-devel"
+  echo "Arch Linux:    sudo pacman -S ncurses"
+end
+
+[fn fetch]
+  echo "Cloning cbonsai repository..."
+  
+  # Use ~/.pack/tmp instead of mktemp
+  env HOME
+  set home ${_env_result}
+  set pack_tmp "${home}/.pack/tmp"
+  mkdir ${pack_tmp}
+  
+  # Create unique subdirectory
+  set unique_dir "${pack_tmp}/cbonsai_$$"
+  mkdir ${unique_dir}
+  set tmpdir ${unique_dir}
+  set srcdir "${tmpdir}/cbonsai"
+  
+  # Clone the repository
+  cd ${tmpdir}
+  run git clone https://gitlab.com/jallbrit/cbonsai.git
+  
+  cd ${srcdir}
+  echo "✓ cbonsai source downloaded"
+end
+
+[fn build]
+  echo "Building cbonsai..."
+  
+  # Build using make
+  run make
+  
+  # Verify the binary was created
+  if exists ./cbonsai
+    echo "✓ cbonsai built successfully"
+  else
+    echo "✗ cbonsai build failed"
+    echo "Make sure ncurses development libraries are installed"
+    exit 1
+  end
+end
+
+[fn install]
+  echo "Installing cbonsai..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cbonsai"
+  set bin_dir "${home}/.local/bin"
+  set shelf_target "${shelf_dir}/cbonsai"
+  set symlink_target "${bin_dir}/cbonsai"
+  
+  # Create shelf and bin directories
+  mkdir ${shelf_dir}
+  mkdir ${bin_dir}
+  
+  # Install the binary
+  if exists ./cbonsai
+    run cp ./cbonsai ${shelf_target}
+    run chmod +x ${shelf_target}
+    run ln -sf ${shelf_target} ${symlink_target}
+    echo "Installed cbonsai to ${shelf_target}"
+    echo "Created symlink at ${symlink_target}"
+    
+    echo ""
+    echo "cbonsai installation complete!"
+    echo "Run 'cbonsai' to grow a bonsai tree in your terminal"
+    echo ""
+    echo "Usage examples:"
+    echo "  cbonsai                # grow a random bonsai"
+    echo "  cbonsai -l             # live growing animation"
+    echo "  cbonsai -t 0.5         # set time multiplier"
+    echo "  cbonsai -i             # infinite mode"
+    echo "  cbonsai -c <base>      # set base type"
+    echo "  cbonsai -m <message>   # add custom message"
+  else
+    echo "✗ cbonsai binary not found"
+    exit 1
+  end
+end
+
+[fn cleanup]
+  if exists ${tmpdir}
+    cd /
+    delete ${tmpdir}
+  end
+  echo "cbonsai installation complete!"
+end
+
+[fn -i uninstall]
+  echo "Uninstalling cbonsai..."
+  env HOME
+  set home ${_env_result}
+  set shelf_dir "${home}/.pack/shelf/cbonsai"
+  set bin_dir "${home}/.local/bin"
+  set symlink_target "${bin_dir}/cbonsai"
+  
+  # Remove symlink
+  if exists ${symlink_target}
+    delete ${symlink_target}
+    echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove shelf directory
+  if exists ${shelf_dir}
+    delete ${shelf_dir}
+    echo "removed shelf directory ${shelf_dir}"
+  end
+  
+  echo "cbonsai uninstalled successfully"
+end
+
+[main]
+  check_deps
+  fetch
+  build
+  install
+  cleanup
+end
