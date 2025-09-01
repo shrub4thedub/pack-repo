@@ -51,10 +51,13 @@ end
   mkdir ${bin_dir}
   
   if exists ./tanakh.sh
-    # Install both script and data file
+    # Install both script and data file to shelf
     run cp ./tanakh.sh ${shelf_script}
     run cp ./tanakh.txt ${shelf_data}
     run chmod +x ${shelf_script}
+    
+    # Also copy text file to bin directory so script can find it
+    run cp ./tanakh.txt ${bin_dir}/tanakh.txt
     
     # Create symlink (without .sh extension for cleaner command)
     run ln -sf ${shelf_script} ${symlink_target}
@@ -86,6 +89,13 @@ end
   if exists ${symlink_target}
     delete ${symlink_target}
     echo "removed symlink ${symlink_target}"
+  end
+  
+  # Remove text file from bin directory
+  set text_file "${bin_dir}/tanakh.txt"
+  if exists ${text_file}
+    delete ${text_file}
+    echo "removed text file ${text_file}"
   end
   
   # Remove shelf directory
